@@ -1,4 +1,5 @@
 from encoding.data_encoding import DataEncoder
+from error_correction.qr_reed_solomon import QRReedSolomon
 
 class QRCodeGenerator:
     def __init__(self, data, error_correction='L'):
@@ -7,10 +8,12 @@ class QRCodeGenerator:
     
     def _data_encoding(self):
         encoder = DataEncoder(self.data, self.error_correction)
+        self.version = encoder.min_version
         self.encoded_data = encoder.encode_data()
     
     def _error_correction_coding(self):
-        pass
+        ec_handler = QRReedSolomon(self.encoded_data, self.error_correction, self.version)
+        self.ec_codewords = ec_handler.generate_ec_codewords()
 
     def _structure_final_message(self):
         pass
