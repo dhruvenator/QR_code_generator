@@ -1,4 +1,4 @@
-LOG = [
+ALPHA = [
     1,
     2,
     4,
@@ -257,7 +257,7 @@ LOG = [
     1
 ]
 
-ANTILOG = [
+LOG = [
     None,
     0,
     1,

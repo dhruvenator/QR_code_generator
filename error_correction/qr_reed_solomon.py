@@ -1,5 +1,6 @@
 from constants.qr_error_correction_codewords import EC_CODEWORDS
 from error_correction.generator_polynomial import generate_generator_polynomial
+from error_correction.polynomial import Polynomial
 from error_correction.polynomial_division import polynomial_division
 
 class QRReedSolomon:
@@ -29,7 +30,10 @@ class QRReedSolomon:
         generator_polynomial = generate_generator_polynomial(self.ec_codewords_len)
         self.ec_codewords = []
         for codewords in self.group1 + self.group2:
-            message_polynomial = [int(byte, 2) for byte in codewords]
-            block_ec_codeword = polynomial_division(message_polynomial, generator_polynomial)
+            message_polynomial = Polynomial([int(byte, 2) for byte in codewords])
+            block_ec_codeword = polynomial_division(
+                message_polynomial,
+                Polynomial(generator_polynomial.coefficients)
+            )
             self.ec_codewords.append(block_ec_codeword)
         return self.ec_codewords
