@@ -22,15 +22,18 @@ class QRReedSolomon:
             raise ValueError("Data does not match the total data codewords for the given version and error correction level.")
         group1 = codewords[:self.group1_blocks * self.group1_block_size]
         group2 = codewords[self.group1_blocks * self.group1_block_size:]
-        self.group1 = [group1[i:i + self.group1_block_size] for i in range(0, len(group1), self.group1_block_size)]
-        self.group2 = [group2[i:i + self.group2_block_size] for i in range(0, len(group2), max(1, self.group2_block_size))]
+        group1 = [group1[i:i + self.group1_block_size] for i in range(0, len(group1), self.group1_block_size)]
+        group2 = [group2[i:i + self.group2_block_size] for i in range(0, len(group2), max(1, self.group2_block_size))]
+        group1 = [[int(b, 2) for b in block] for block in group1]
+        group2 = [[int(b, 2) for b in block] for block in group2]
+        self.groups = group1 + group2
 
     def generate_ec_codewords(self):
         self.make_groups()
         generator_polynomial = generate_generator_polynomial(self.ec_codewords_len)
         self.ec_codewords = []
-        for codewords in self.group1 + self.group2:
-            message_polynomial = Polynomial([int(byte, 2) for byte in codewords])
+        for codewords in self.groups:
+            message_polynomial = Polynomial(codewords)
             block_ec_codeword = polynomial_division(
                 message_polynomial,
                 Polynomial(generator_polynomial.coefficients)

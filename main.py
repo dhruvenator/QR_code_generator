@@ -1,5 +1,6 @@
 from encoding.data_encoding import DataEncoder
 from error_correction.qr_reed_solomon import QRReedSolomon
+from message_interleaving.interleaver import MessageInterleaver
 
 class QRCodeGenerator:
     def __init__(self, data, error_correction='L'):
@@ -14,9 +15,11 @@ class QRCodeGenerator:
     def _error_correction_coding(self):
         ec_handler = QRReedSolomon(self.encoded_data, self.error_correction, self.version)
         self.ec_codewords = ec_handler.generate_ec_codewords()
+        self.data_groups = ec_handler.groups
 
     def _structure_final_message(self):
-        pass
+        interleaver = MessageInterleaver(self.data_groups, self.ec_codewords, self.version)
+        self.qr_data = interleaver.final_message
 
     def _module_placement_in_matrix(self):
         pass
@@ -40,6 +43,6 @@ def generate_qr_code(data, error_correction='L'):
         return qr_generator.generate()
 
 if __name__ == "__main__":
-    generate_qr_code('HELLO WORLD', 'Q')
+    generate_qr_code('HELLO WORLD', 'M')
     generate_qr_code('8675309')
     generate_qr_code('Hello, world!')
