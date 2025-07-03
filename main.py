@@ -1,6 +1,6 @@
 from encoding.data_encoding import DataEncoder
 from error_correction.qr_reed_solomon import QRReedSolomon
-from message_interleaving.interleaver import MessageInterleaver
+from message_interleaving.interleaver import structure_message
 
 class QRCodeGenerator:
     def __init__(self, data, error_correction='L'):
@@ -18,8 +18,7 @@ class QRCodeGenerator:
         self.data_groups = ec_handler.groups
 
     def _structure_final_message(self):
-        interleaver = MessageInterleaver(self.data_groups, self.ec_codewords, self.version)
-        self.qr_data = interleaver.final_message
+        self.qr_data = structure_message(self.data_groups, self.ec_codewords, self.version)
 
     def _module_placement_in_matrix(self):
         pass
