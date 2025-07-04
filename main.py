@@ -1,6 +1,8 @@
+from constants.qr_module_characters import MODULE
 from encoding.data_encoding import DataEncoder
 from error_correction.qr_reed_solomon import QRReedSolomon
 from message_interleaving.interleaver import structure_message
+from module_placement.placement import ModulePlacer
 
 class QRCodeGenerator:
     def __init__(self, data, error_correction='L'):
@@ -21,7 +23,8 @@ class QRCodeGenerator:
         self.qr_data = structure_message(self.data_groups, self.ec_codewords, self.version)
 
     def _module_placement_in_matrix(self):
-        pass
+        placer = ModulePlacer(1)
+        self.qr = placer.place_data_bits(self.qr_data)
 
     def _data_masking(self):
         pass
@@ -36,6 +39,8 @@ class QRCodeGenerator:
         self._module_placement_in_matrix()
         self._data_masking()
         self._format_and_version_information()
+        for row in self.qr:
+            print(''.join(['⬜' if v == MODULE['white'] else '⬛' if v == MODULE['black'] else '🟦' if v == MODULE['reserved'] else '🟨' for v in row]))
 
 def generate_qr_code(data, error_correction='L'):
         qr_generator = QRCodeGenerator(data, error_correction)
@@ -43,5 +48,3 @@ def generate_qr_code(data, error_correction='L'):
 
 if __name__ == "__main__":
     generate_qr_code('HELLO WORLD', 'M')
-    generate_qr_code('8675309')
-    generate_qr_code('Hello, world!')
