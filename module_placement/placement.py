@@ -7,6 +7,10 @@ class ModulePlacer:
         self.version = version
         self.size = (self.version - 1) * 4 + 21
         self.qr = full((self.size, self.size), MODULE['empty'])
+        self.qr_bit = {
+            '0': MODULE['white'],
+            '1': MODULE['black']
+        }
         self._add_finder_patterns()
         self._add_seperators()
         self._add_alignment_patterns()
@@ -46,7 +50,7 @@ class ModulePlacer:
         for x in center_locations:
             for y in center_locations:
                 region = self.qr[x-2:x+3, y-2:y+3]
-                if all(region == None):
+                if all(region == MODULE['empty']):
                     draw_pattern(x, y)
 
     def _add_timing_patterns(self):
@@ -72,6 +76,24 @@ class ModulePlacer:
         reserve_format_information_area()
         if self.version >= 7:
             reserve_version_information_area()
+    
+    def _free_module_generator(self):
+        up = True
+        col = self.size - 1
+        while col > 0:
+            rows = range(self.size - 1, -1, -1) if up else range(self.size)
+            for row in rows:
+                for i in (0, 1):
+                    if col - i >= 0 and self.qr[row, col - i] == MODULE['empty']:
+                        yield (row, col - i)
+            col -= 2
+            up = not up
+            if col == 6:
+                col -= 1
 
-    def place_data_bits(self, data):
+    def place_data_bits(self, data: str):
+        free_modules = self._free_module_generator()
+        for bit in data:
+            location = next(free_modules)
+            self.qr[location[0], location[1]] = self.qr_bit[bit]
         return self.qr

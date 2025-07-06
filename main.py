@@ -23,7 +23,7 @@ class QRCodeGenerator:
         self.qr_data = structure_message(self.data_groups, self.ec_codewords, self.version)
 
     def _module_placement_in_matrix(self):
-        placer = ModulePlacer(1)
+        placer = ModulePlacer(self.version)
         self.qr = placer.place_data_bits(self.qr_data)
 
     def _data_masking(self):
