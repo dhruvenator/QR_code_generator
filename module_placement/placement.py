@@ -1,22 +1,20 @@
-from numpy import full, all, tile
+from numpy import full, all, tile, where
 from constants.qr_alignment_pattern_locations import ALIGNMENT_PATTERN_LOCATIONS
-from constants.qr_module_characters import MODULE
+from constants.qr_module_characters import MODULE, QR_BIT
 
 class ModulePlacer:
     def __init__(self, version: int):
         self.version = version
         self.size = (self.version - 1) * 4 + 21
         self.qr = full((self.size, self.size), MODULE['empty'])
-        self.qr_bit = {
-            '0': MODULE['white'],
-            '1': MODULE['black']
-        }
         self._add_finder_patterns()
         self._add_seperators()
         self._add_alignment_patterns()
         self._add_timing_patterns()
         self._add_dark_module()
         self._reserve_modules()
+        non_data_rows, non_data_cols = where(self.qr != MODULE['empty'])
+        self.non_data_modules = list(zip(non_data_rows, non_data_cols))
     
     def _add_finder_patterns(self):
         def draw_pattern(x: int, y: int):
@@ -95,5 +93,5 @@ class ModulePlacer:
         free_modules = self._free_module_generator()
         for bit in data:
             location = next(free_modules)
-            self.qr[location[0], location[1]] = self.qr_bit[bit]
+            self.qr[location[0], location[1]] = QR_BIT[int(bit)]
         return self.qr

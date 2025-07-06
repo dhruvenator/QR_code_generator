@@ -1,8 +1,10 @@
 from constants.qr_module_characters import MODULE
+from data_masking.masking import MaskEvaluator
 from encoding.data_encoding import DataEncoder
 from error_correction.qr_reed_solomon import QRReedSolomon
 from message_interleaving.interleaver import structure_message
 from module_placement.placement import ModulePlacer
+from data_masking.penalty import PenaltyCalculator
 
 class QRCodeGenerator:
     def __init__(self, data, error_correction='L'):
@@ -24,10 +26,12 @@ class QRCodeGenerator:
 
     def _module_placement_in_matrix(self):
         placer = ModulePlacer(self.version)
+        self.non_data_modules = placer.non_data_modules
         self.qr = placer.place_data_bits(self.qr_data)
 
     def _data_masking(self):
-        pass
+        evaluator = MaskEvaluator(self.qr, self.non_data_modules)
+        evaluator.get_best_mask()
 
     def _format_and_version_information(self):
         pass
@@ -47,4 +51,4 @@ def generate_qr_code(data, error_correction='L'):
         return qr_generator.generate()
 
 if __name__ == "__main__":
-    generate_qr_code('HELLO WORLD', 'M')
+    generate_qr_code('dhruvanarayan.com', 'M')
