@@ -30,11 +30,8 @@ class QRCodeGenerator:
         self.qr = placer.place_data_bits(self.qr_data)
 
     def _data_masking(self):
-        evaluator = MaskEvaluator(self.qr, self.non_data_modules)
-        evaluator.get_best_mask()
-
-    def _format_and_version_information(self):
-        pass
+        evaluator = MaskEvaluator(self.qr, self.non_data_modules, self.version, self.error_correction)
+        self.qr = evaluator.get_best_mask()
 
     def generate(self):
         self._data_encoding()
@@ -42,7 +39,6 @@ class QRCodeGenerator:
         self._structure_final_message()
         self._module_placement_in_matrix()
         self._data_masking()
-        self._format_and_version_information()
         for row in self.qr:
             print(''.join(['⬜' if v == MODULE['white'] else '⬛' if v == MODULE['black'] else '🟦' if v == MODULE['reserved'] else '🟨' for v in row]))
 
