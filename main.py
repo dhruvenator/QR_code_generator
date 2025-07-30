@@ -1,3 +1,4 @@
+from numpy import full
 from constants.qr_module_characters import MODULE
 from data_masking.masking import MaskEvaluator
 from encoding.data_encoding import DataEncoder
@@ -6,7 +7,7 @@ from message_interleaving.interleaver import structure_message
 from module_placement.placement import ModulePlacer
 
 class QRCodeGenerator:
-    def __init__(self, data, error_correction='L'):
+    def __init__(self, data: str, error_correction: str='L'):
         self.data = data
         self.error_correction = error_correction
     
@@ -31,6 +32,12 @@ class QRCodeGenerator:
     def _data_masking(self):
         evaluator = MaskEvaluator(self.qr, self.non_data_modules, self.version, self.error_correction)
         self.qr = evaluator.get_best_mask()
+    
+    def _add_quiet_zone(self):
+        new_size = self.qr.shape[0] + 8
+        new_qr = full((new_size, new_size), MODULE['white'])
+        new_qr[4:-4, 4:-4] = self.qr
+        self.qr = new_qr
 
     def generate(self):
         self._data_encoding()
@@ -38,6 +45,7 @@ class QRCodeGenerator:
         self._structure_final_message()
         self._module_placement_in_matrix()
         self._data_masking()
+        self._add_quiet_zone()
         return self.qr
 
 def generate_qr_code(data, error_correction='L'):
@@ -48,6 +56,3 @@ def generate_qr_code(data, error_correction='L'):
 
 if __name__ == "__main__":
     generate_qr_code('dhruvanarayan.com', 'M')
-
-# TODO: Add command line argument parsing for data and error correction level
-# TODO: Add image generation logic
