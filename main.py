@@ -50,9 +50,9 @@ class QRCodeGenerator:
 
 def generate_qr_code(data, error_correction='L'):
         qr_generator = QRCodeGenerator(data, error_correction)
-        qr = qr_generator.generate()
-        for row in qr:
-            print(''.join(['⬜' if v == MODULE['white'] else '⬛' if v == MODULE['black'] else '🟦' if v == MODULE['reserved'] else '🟨' for v in row]))
+        return qr_generator.generate()
 
 if __name__ == "__main__":
-    generate_qr_code('dhruvanarayan.com', 'M')
+    qr = generate_qr_code('dhruvanarayan.com', 'M')
+    for row in qr:
+        print(''.join(['⬜' if v == MODULE['white'] else '⬛' if v == MODULE['black'] else '🟦' if v == MODULE['reserved'] else '🟨' for v in row]))
