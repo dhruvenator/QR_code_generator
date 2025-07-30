@@ -23,5 +23,5 @@ class MaskEvaluator:
             penalty = penalty_calculator.calculate_penalty(masked_qr)
             if penalty < min_penalty:
                 min_penalty = penalty
-                best_mask = masked_qr
+                best_mask = deepcopy(masked_qr)
         return best_mask

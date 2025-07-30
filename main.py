@@ -4,7 +4,6 @@ from encoding.data_encoding import DataEncoder
 from error_correction.qr_reed_solomon import QRReedSolomon
 from message_interleaving.interleaver import structure_message
 from module_placement.placement import ModulePlacer
-from data_masking.penalty import PenaltyCalculator
 
 class QRCodeGenerator:
     def __init__(self, data, error_correction='L'):
@@ -39,12 +38,16 @@ class QRCodeGenerator:
         self._structure_final_message()
         self._module_placement_in_matrix()
         self._data_masking()
-        for row in self.qr:
-            print(''.join(['⬜' if v == MODULE['white'] else '⬛' if v == MODULE['black'] else '🟦' if v == MODULE['reserved'] else '🟨' for v in row]))
+        return self.qr
 
 def generate_qr_code(data, error_correction='L'):
         qr_generator = QRCodeGenerator(data, error_correction)
-        return qr_generator.generate()
+        qr = qr_generator.generate()
+        for row in qr:
+            print(''.join(['⬜' if v == MODULE['white'] else '⬛' if v == MODULE['black'] else '🟦' if v == MODULE['reserved'] else '🟨' for v in row]))
 
 if __name__ == "__main__":
     generate_qr_code('dhruvanarayan.com', 'M')
+
+# TODO: Add command line argument parsing for data and error correction level
+# TODO: Add image generation logic
