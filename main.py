@@ -49,8 +49,8 @@ class QRCodeGenerator:
         return self.qr
 
 def generate_qr_code(data, error_correction='L'):
-        qr_generator = QRCodeGenerator(data, error_correction)
-        return qr_generator.generate()
+    qr_generator = QRCodeGenerator(data, error_correction)
+    return qr_generator.generate()
 
 if __name__ == "__main__":
     qr = generate_qr_code('dhruvanarayan.com', 'M')
