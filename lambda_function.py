@@ -15,10 +15,12 @@ def lambda_handler(event, context):
         qr_code = generate_qr_code(data, error_correction_level)
         return {
             'statusCode': 200,
+            "headers": { "Content-Type": "application/json" },
             'body': convert_to_list(qr_code)
         }
     except Exception as e:
         return {
             'statusCode': 500,
+            "headers": { "Content-Type": "application/json" },
             'body': str(e)
         }
